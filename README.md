@@ -16,7 +16,7 @@
 ### for VSCode (Visual Studio Code)
 1. 프로젝트를 다운받고 싶은 경로에서 git clone으로 다운로드
 ```
-git clone https://github.com/gaonsoftdev/WebSerilProviderLib.git
+git clone https://github.com/rogerthat2578/WebSerilProviderLib.git
 ```
 2. 해당 프로젝트 open
 - Folder open으로 해당 폴더 open
