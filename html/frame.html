@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iFrame serial port stream example</title>
+    <style>
+        input{
+            width: 400px;
+        }
+    </style>
+    <script type="text/javascript" src="../js/serialProvider.js"></script>
+</head>
+<body>
+    <button id="connect">Port 연결</button>
+    <button id="change">Port 변경</button>
+    <button id="disconnect">Port 닫기</button>
+    <input type="text" id="stream"/>
+    <script type="text/javascript">
+        /* const by = [141,10,83,212,172,71,83,172,43,48,48,48,48,48,48,48,235,231]//[63,63,63,63,63,63,63,166,189,94,76,24,83,21,17,71,83,17,43,48,48,48,48,48,48,48,23,23]
+
+        console.log(new TextDecoder().decode(new Int16Array(by)));
+        console.log(new TextDecoder().decode(new Int8Array(by)));
+        console.log(new TextDecoder().decode(new Int16Array(by)));
+        console.log(new TextDecoder().decode(new Int8Array(by)));
+
+        console.log(new TextDecoder('utf-8').decode(new Int16Array(by)));
+        console.log(new TextDecoder('utf-8').decode(new Int8Array(by)));
+        console.log(new TextDecoder('ascii').decode(new Int16Array(by)));
+        console.log(new TextDecoder('ascii').decode(new Int8Array(by)));
+
+        console.log(new TextDecoder('utf-8').decode(new Uint16Array(by)));
+        console.log(new TextDecoder('utf-8').decode(new Uint8Array(by)));
+        console.log(new TextDecoder('ascii').decode(new Uint16Array(by)));
+        console.log(new TextDecoder('ascii').decode(new Uint8Array(by))); */
+        const serialport = new SerialProvider({
+            //메세지 로그 활성화(optional) : false
+            debug: true,
+            //비트 레이트(필수) : 9600
+            baudRate: 9600,
+            //데이터 비트(optional) : 8
+            dataBits:8,
+            //스탑 비트(optional) : 1
+            stopBits:1, 
+            //패리티 비트(optional) : "none"
+            parity:"none",
+            //흐름 제어(optional) : "none"
+            flowControl: "none",
+            //연결이후 끊긴다면 자동 재연결 시간(ms:optional) : 3000
+            reconnect_interval: 2000,
+            //한줄을 구분하기 위한 구분자
+            //splitChar: "\r\n",
+            splitChar: 13,
+            //구분자 제거 여부
+            removeSplitChar: true,
+            //장비 필터({ProductId, VendorId} 필요)
+            //connected 함수에서 portinfo 정보
+            //filter: [
+            //    { usbProductId: 0x2303, usbVendorId: 0x67b }
+            //],
+            //연결 함수 호출 이후 연결이 되면 발생(재연결 되도 발생)
+            connected: (portinfo) => {
+                console.log("connected", portinfo);
+            },
+            //닫기 함수 호출 이후 정상 적으로 닫이면 발생
+            disconneted: () => {
+                console.log("disconneted");
+            },
+            //스트림에서 읽음 세션 끝이나면 발생 { text : string, buffer : Uint8Array }
+            readedStream: (stream) => {
+                console.log(stream);
+                document.getElementById("stream").value = stream.text;
+            },
+            errorMessage: (msg) => {
+                console.log("error: " + msg);
+            }
+        });
+        /* 상단 옵션으로 넣을때와 동일한 동작
+        .on("connected", (portinfo) => {
+            console.log("chain connected");
+            alert("연결됨")
+        })
+        .on("disconneted", () => {
+            console.log("chain disconneted");
+        })
+        .on("readedStream", (stream) => {
+            console.log("chain readedStream", stream);
+            document.getElementById("stream").value = stream.text;
+        })
+        .on("errorMessage", (msg) => {
+            console.log("error: " + msg);
+        })*/
+        ;
+        
+        document.getElementById('connect').addEventListener('click', () => {
+            try { //연결 자동화 안됨(사용자에 의한 제스처로 활성화 가능)
+                serialport.Connection();    
+            } catch(error) {
+                alert(error)
+            }
+        }); 
+        document.getElementById('change').addEventListener('click', () => {
+            serialport.ConfigSerial({
+                dataBits: 8,
+                splitChar: "\r"
+            }); 
+        }); 
+        document.getElementById('disconnect').addEventListener('click', () => {
+            serialport.DisConnection();
+        });
+    </script>
+</body>
+</html>
